@@ -1,6 +1,6 @@
-import { Select as ChakraSelect } from "@chakra-ui/react";
-import type { ChangeEvent } from "react";
-import { withLabel } from "./utils/with-label";
+import { Field } from "@/components/ui/field";
+import { NativeSelect } from "@/components/ui/select";
+import type { ReactNode } from "react";
 
 type SelectValue = string | number;
 
@@ -10,30 +10,34 @@ interface SelectItem {
 }
 
 export interface SelectProps {
+  label: ReactNode;
   value: SelectValue;
   options: SelectItem[];
   onChange: (value: SelectValue) => void;
   testId?: string;
 }
 
-export const Select = withLabel(
-  ({ value, options, onChange, testId }: SelectProps) => {
-    const onSelectChange = ({
-      target: { value },
-    }: ChangeEvent<HTMLSelectElement>) => onChange(value);
-
-    return (
-      <ChakraSelect
+export const Select = ({
+  label,
+  value,
+  options,
+  onChange,
+  testId,
+}: SelectProps) => (
+  <Field label={label}>
+    {(id) => (
+      <NativeSelect
+        id={id}
         data-testid={testId}
-        onChange={onSelectChange}
         value={value}
+        onChange={({ target }) => onChange(target.value)}
       >
         {options.map(({ key, value }) => (
           <option key={value} value={value}>
             {key}
           </option>
         ))}
-      </ChakraSelect>
-    );
-  }
+      </NativeSelect>
+    )}
+  </Field>
 );

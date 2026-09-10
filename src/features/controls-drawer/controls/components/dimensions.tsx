@@ -1,7 +1,7 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
 import type { Dimensions, Marker } from "@/global-context/config/config.types";
 import { ColorButton } from "@/components/color-button";
-import { Input } from "@/components/input";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { SQUARE_SIZES } from "../controls.constants";
 import { Select } from "@/components/select";
 import { getDimensions } from "@/features/controls-drawer/controls/utils/get-dimensions";
@@ -15,68 +15,52 @@ export const DimensionsControls = () => {
 
   const setDimensions =
     (prop: keyof Dimensions) => (value: string | number) => {
-      setConfig({
-        [prop]: Number(value),
-        scale: 1,
-      });
+      setConfig({ [prop]: Number(value), scale: 1 });
     };
 
   const setMarker = (prop: keyof Marker) => (value: string) => {
-    setConfig({
-      marker: {
-        ...marker,
-        [prop]: value,
-      },
-    });
+    setConfig({ marker: { ...marker, [prop]: value } });
   };
 
   return (
-    <>
-      <Flex gap={2}>
-        <Box flex={1}>
-          <Select
-            label="Width"
-            testId="scene-width-input"
-            value={width}
-            options={getDimensions(squareSize)}
-            onChange={setDimensions("width")}
-          />
-        </Box>
-        <Box flex={1}>
-          <Select
-            label="Height"
-            testId="scene-height-input"
-            value={height}
-            options={getDimensions(squareSize)}
-            onChange={setDimensions("height")}
-          />
-        </Box>
-      </Flex>
-      <Flex gap={2} alignItems="flex-end">
-        <Box flex={1}>
-          <Select
-            label="Square size"
-            testId="square-size-input"
-            value={squareSize}
-            options={SQUARE_SIZES}
-            onChange={setDimensions("squareSize")}
-          />
-        </Box>
-        <Box>
-          <Text>Marker</Text>
-          <Flex alignItems="flex-end" gap={2}>
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-3">
+        <Select
+          label="Width"
+          testId="scene-width-input"
+          value={width}
+          options={getDimensions(squareSize)}
+          onChange={setDimensions("width")}
+        />
+        <Select
+          label="Height"
+          testId="scene-height-input"
+          value={height}
+          options={getDimensions(squareSize)}
+          onChange={setDimensions("height")}
+        />
+      </div>
+      <div className="flex items-end gap-3">
+        <Select
+          label="Square size"
+          testId="square-size-input"
+          value={squareSize}
+          options={SQUARE_SIZES}
+          onChange={setDimensions("squareSize")}
+        />
+        <Field label="Marker" className="w-16 shrink-0">
+          {(id) => (
             <Input
-              width={50}
+              id={id}
+              className="tnum text-center"
               maxLength={1}
               value={marker.symbol}
-              onChange={({ target: { value } }) => {
-                setMarker("symbol")(value);
-              }}
+              onChange={({ target: { value } }) => setMarker("symbol")(value)}
             />
-            <ColorButton color={marker.color} onChange={setMarker("color")} />
-          </Flex>
-        </Box>
-      </Flex>
-    </>
+          )}
+        </Field>
+        <ColorButton color={marker.color} onChange={setMarker("color")} />
+      </div>
+    </div>
   );
 };

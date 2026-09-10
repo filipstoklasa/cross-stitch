@@ -1,13 +1,11 @@
-import { Flex, Tag, Text } from "@chakra-ui/react";
+import { Badge } from "@/components/ui/badge";
 import getConfig from "next/config";
 
 const { publicRuntimeConfig } = getConfig();
 
-export const Version = () => {
-  return (
-    <Flex gap={2}>
-      <Text>© {new Date().getFullYear()} Filip Stoklasa</Text>{" "}
-      <Tag>version: {publicRuntimeConfig?.version}</Tag>
-    </Flex>
-  );
-};
+export const Version = () => (
+  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+    <span>© {new Date().getFullYear()} Filip Stoklasa</span>
+    <Badge className="tnum">version: {publicRuntimeConfig?.version}</Badge>
+  </div>
+);

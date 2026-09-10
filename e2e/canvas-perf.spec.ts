@@ -81,12 +81,14 @@ const INSTRUMENT = () => {
       recording = false;
       return summary();
     },
-    // Drag-paint every cell centre once, synchronously, no test-runner IPC.
+    // Drag-paint every on-screen cell once, synchronously, no test-runner IPC.
+    // Sweeps the canvas's on-screen box in `squareSize`-px steps (≈ one grid
+    // cell per step at 100% zoom) — implementation-agnostic.
     paintAllCells(squareSize: number) {
       const cv = document.getElementById("scene") as HTMLCanvasElement;
       const r = cv.getBoundingClientRect();
-      const cols = Math.floor(cv.width / squareSize);
-      const rows = Math.floor(cv.height / squareSize);
+      const cols = Math.max(1, Math.floor(r.width / squareSize));
+      const rows = Math.max(1, Math.floor(r.height / squareSize));
       const fire = (type: string, x: number, y: number) =>
         cv.dispatchEvent(
           new (type === "mousemove" ? MouseEvent : PointerEvent)(type, {

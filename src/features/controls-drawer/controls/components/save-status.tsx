@@ -1,59 +1,56 @@
-import { Button, Flex, Text, useToast } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
 import { CANVAS_STATE } from "@/features/canvas/canvas.constants";
-import { getScene } from "@/features/canvas/canvas.utils";
 import { printScene } from "@/features/controls-drawer/controls/utils/print-scene";
+import { renderFullImage } from "@/features/canvas/renderer";
 import { saveFile } from "@/features/controls-drawer/controls/utils/save-file";
+import { toast } from "sonner";
 import { useConfig } from "@/global-context/config/config";
 import { useSaveLocalConfig } from "@/hooks/use-save-config";
 
 export const SaveStatusControls = () => {
-  const toast = useToast();
   const { config } = useConfig();
   const { setLocalConfig } = useSaveLocalConfig();
 
+  const withState = () => ({
+    ...config,
+    initialState: Object.fromEntries(CANVAS_STATE),
+  });
+
   const saveStatus = () => {
-    setLocalConfig({
-      ...config,
-      initialState: Object.fromEntries(CANVAS_STATE),
-    });
-    toast({
-      description: "Status successfully saved to browser storage.",
-      status: "success",
-    });
+    setLocalConfig(withState());
+    toast.success("Status successfully saved to browser storage.");
   };
 
   const onSave = () => {
     const data =
       "data:application/json;charset=utf-8," +
-      encodeURIComponent(
-        JSON.stringify({
-          ...config,
-          initialState: Object.fromEntries(CANVAS_STATE),
-        })
-      );
-
+      encodeURIComponent(JSON.stringify(withState()));
     saveFile(data, `config_${new Date().toISOString()}.json`);
   };
 
-  const onPrint = () => {
-    const dataUrl = getScene().toDataURL();
-    printScene(dataUrl);
-  };
+  const onPrint = () =>
+    printScene(renderFullImage(config, CANVAS_STATE));
 
-  const onPrintCanvas = () => {
-    const dataUrl = getScene().toDataURL("image/png");
-    saveFile(dataUrl, "canvas.png");
-  };
+  const onPrintCanvas = () =>
+    saveFile(renderFullImage(config, CANVAS_STATE, "image/png"), "canvas.png");
 
   return (
-    <>
-      <Text fontWeight="bold">Output</Text>
-      <Flex gap={2}>
-        <Button onClick={saveStatus}>Save to browser</Button>
-        <Button onClick={onSave}>Save as file</Button>
-        <Button onClick={onPrint}>Print grid</Button>
-        <Button onClick={onPrintCanvas}>Print canvas</Button>
-      </Flex>
-    </>
+    <div className="flex flex-col gap-2">
+      <p className="text-sm font-semibold">Output</p>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" onClick={saveStatus}>
+          Save to browser
+        </Button>
+        <Button variant="outline" size="sm" onClick={onSave}>
+          Save as file
+        </Button>
+        <Button variant="outline" size="sm" onClick={onPrint}>
+          Print grid
+        </Button>
+        <Button variant="outline" size="sm" onClick={onPrintCanvas}>
+          Print canvas
+        </Button>
+      </div>
+    </div>
   );
 };

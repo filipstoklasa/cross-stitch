@@ -1,43 +1,36 @@
-import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import { ButtonGroup, IconButton } from "@chakra-ui/react";
-import { useConfig } from "@/global-context/config/config";
-
-const SCALE_STEP = 0.5;
+import { MinusIcon, PlusIcon } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { useZoom } from "@/features/canvas/viewport";
 
 export const Scale = () => {
-  const {
-    config: { scale },
-    setConfig,
-  } = useConfig();
-
-  const onAddScale = () => {
-    setConfig({ scale: scale + SCALE_STEP });
-  };
-
-  const onLowerScale = () => {
-    if (scale > SCALE_STEP) setConfig({ scale: scale - SCALE_STEP });
-  };
+  const { zoom, zoomIn, zoomOut } = useZoom();
 
   return (
-    <ButtonGroup size="sm" isAttached variant="outline">
-      <IconButton
-        disabled={scale === SCALE_STEP}
+    <div className="flex items-center rounded-md border border-input bg-card shadow-sm">
+      <Button
+        variant="ghost"
+        size="icon-sm"
         aria-label="scale-down"
         data-testid="scale-down"
-        icon={
-          <MinusIcon color={scale === SCALE_STEP ? "GrayText" : undefined} />
-        }
-        onClick={onLowerScale}
-      />
-      <div data-testid="scale-value" className="px-2 self-center">
-        {scale * 100}%
-      </div>
-      <IconButton
+        onClick={zoomOut}
+      >
+        <MinusIcon />
+      </Button>
+      <span
+        data-testid="scale-value"
+        className="tnum w-14 select-none text-center text-xs text-muted-foreground"
+      >
+        {Math.round(zoom * 100)}%
+      </span>
+      <Button
+        variant="ghost"
+        size="icon-sm"
         aria-label="scale-up"
         data-testid="scale-up"
-        icon={<AddIcon />}
-        onClick={onAddScale}
-      />
-    </ButtonGroup>
+        onClick={zoomIn}
+      >
+        <PlusIcon />
+      </Button>
+    </div>
   );
 };
