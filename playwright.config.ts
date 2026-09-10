@@ -34,9 +34,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      // Use Google Chrome Stable (system install / Playwright Docker image)
-      // rather than a separately downloaded Chromium build.
-      use: { ...devices["Desktop Chrome"], channel: "chrome" },
+      use: { ...devices["Desktop Chrome"] },
     },
 
     {
