@@ -7,14 +7,14 @@ interface ColorButtonProps {
   className?: string;
 }
 
-// Swatch that opens the native colour picker.
+// Swatch that opens the native color picker.
 export const ColorButton = ({ color, onChange, className }: ColorButtonProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <button
       type="button"
-      aria-label="Marker colour"
+      aria-label="Marker color"
       onClick={() => inputRef.current?.click()}
       className={cn(
         "relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-input shadow-sm transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

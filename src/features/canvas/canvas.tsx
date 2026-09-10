@@ -9,7 +9,6 @@ import {
   type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -37,6 +36,7 @@ export const Canvas = () => {
   const lastPt = useRef({ x: 0, y: 0 });
   const spaceDown = useRef(false);
   const frame = useRef(0);
+  const pendingCenter = useRef(true);
 
   const [zoom, setZoom] = useState(1);
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -97,6 +97,18 @@ export const Canvas = () => {
     [width, height, size],
   );
 
+  const centerView = useCallback(
+    (z: number) => {
+      const viewW = size.w - RULER;
+      const viewH = size.h - RULER;
+      pan.current = {
+        x: width * z < viewW ? (viewW - width * z) / 2 : 0,
+        y: height * z < viewH ? (viewH - height * z) / 2 : 0,
+      };
+    },
+    [width, height, size],
+  );
+
   const zoomAt = useCallback(
     (nextZoom: number, clientX: number, clientY: number) => {
       const canvas = canvasRef.current;
@@ -132,23 +144,37 @@ export const Canvas = () => {
       zoomIn: () => zoomAtCenter(ZOOM_STEP),
       zoomOut: () => zoomAtCenter(1 / ZOOM_STEP),
       reset: () => {
-        pan.current = { x: 0, y: 0 };
+        pendingCenter.current = true;
+        centerView(1);
         setZoom(1);
+        requestDraw();
       },
     });
-  }, [zoom, zoomAtCenter, publishZoom]);
+  }, [zoom, zoomAtCenter, centerView, requestDraw, publishZoom]);
 
-  // reset the view when the grid dimensions change
+  // reset + centre the view when the grid dimensions change (and once the
+  // container size is first known)
   useEffect(() => {
-    pan.current = { x: 0, y: 0 };
+    pendingCenter.current = true;
     setZoom(1);
   }, [width, height, squareSize]);
+
+  useEffect(() => {
+    if (size.w === 0) return;
+    if (pendingCenter.current) {
+      pendingCenter.current = false;
+      centerView(1);
+    } else {
+      clampPan(zoom);
+    }
+    requestDraw();
+  }, [size, zoom, centerView, clampPan, requestDraw]);
 
   // redraw on any dependency change (config identity covers cell/pattern edits)
   useEffect(requestDraw, [requestDraw, config, resolvedTheme, size]);
 
   // observe container size
-  useLayoutEffect(() => {
+  useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
     const ro = new ResizeObserver(() => {

@@ -15,9 +15,6 @@ import { expect, test } from "@playwright/test";
  * Otherwise each timing must stay within TOLERANCE x baseline.
  */
 
-// Use the Chrome already installed on the machine — no bundled-browser download.
-test.use({ channel: "chrome" });
-
 const BASELINE_PATH = join(__dirname, "canvas-perf.baseline.json");
 const LATEST_PATH = join(__dirname, "../test-results/canvas-perf.latest.json");
 const TOLERANCE = 1.5;
@@ -200,13 +197,20 @@ test("canvas render performance", async ({ page }) => {
     return;
   }
 
+  // fullRedrawMs (one full scene render) and paintPerCellUs (per-cell input +
+  // paint cost) are the comparable gates. paintAllCellsMs / cells are only
+  // informational — the sweep covers the on-screen grid, whose cell count
+  // depends on the viewport and zoom.
   const base = JSON.parse(readFileSync(BASELINE_PATH, "utf8")).results as Metrics;
   for (const name of Object.keys(results)) {
-    for (const metric of ["fullRedrawMs", "paintAllCellsMs", "paintPerCellUs"] as const) {
+    for (const metric of ["fullRedrawMs", "paintPerCellUs"] as const) {
       const now = results[name][metric];
       const ceil = base[name][metric] * TOLERANCE;
       expect
-        .soft(now, `${name}.${metric}: ${now} vs baseline ${base[name][metric]} (x${TOLERANCE} = ${ceil.toFixed(1)})`)
+        .soft(
+          now,
+          `${name}.${metric}: ${now} vs baseline ${base[name][metric]} (x${TOLERANCE} = ${ceil.toFixed(1)})`,
+        )
         .toBeLessThanOrEqual(ceil);
     }
   }
