@@ -9,26 +9,26 @@
   },
   "results": {
     "default_500_sq20": {
-      "cells": 625,
-      "fullRedrawMs": 11.1,
-      "fullRedrawOps": 1877,
-      "paintAllCellsMs": 64.3,
-      "paintPerCellUs": 102.9
+      "cells": 2112,
+      "fullRedrawMs": 0.6,
+      "fullRedrawOps": 135,
+      "paintAllCellsMs": 110.8,
+      "paintPerCellUs": 52.5
     },
     "medium_1000_sq20": {
-      "cells": 2500,
-      "fullRedrawMs": 36.9,
-      "fullRedrawOps": 7502,
-      "paintAllCellsMs": 225.8,
-      "paintPerCellUs": 90.3
+      "cells": 2112,
+      "fullRedrawMs": 1.1,
+      "fullRedrawOps": 193,
+      "paintAllCellsMs": 95.9,
+      "paintPerCellUs": 45.4
     },
     "large_1500_sq10": {
-      "cells": 22500,
-      "fullRedrawMs": 361,
-      "fullRedrawOps": 67502,
-      "paintAllCellsMs": 1776.7,
-      "paintPerCellUs": 79
+      "cells": 8448,
+      "fullRedrawMs": 2.5,
+      "fullRedrawOps": 352,
+      "paintAllCellsMs": 282.6,
+      "paintPerCellUs": 33.5
     }
   },
-  "at": "2026-09-10T18:01:07.741Z"
+  "at": "2026-09-10T21:03:08.140Z"
 }

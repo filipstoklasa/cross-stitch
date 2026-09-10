@@ -3,21 +3,25 @@ import { dirname, join } from "path";
 import { expect, test } from "@playwright/test";
 
 /**
- * Canvas rendering performance baseline / eval.
+ * Canvas rendering performance eval.
  *
- * Measures user-observable canvas cost so it survives the renderer refactor
- * (still a 2D context, still drives paint/redraw):
- *   - fullRedrawMs   time spent in 2D-context calls for one full scene redraw
- *   - paintAllCellsMs wall time to drag-paint every cell of the grid
+ * Wraps getContext("2d") to time draw calls, so it survives a renderer rewrite
+ * (still a 2D context, still drives paint/redraw). Gated metrics:
+ *   - fullRedrawMs    2D-call span of one full scene render (triggered by zoom)
+ *   - paintPerCellUs  per-cell input + paint cost over a viewport drag-sweep
+ * paintAllCellsMs / cells are logged only (they scale with viewport & zoom).
  *
- * Baseline lives in e2e/canvas-perf.baseline.json. Regenerate with:
- *   PERF_BASELINE=update yarn e2e canvas-perf
- * Otherwise each timing must stay within TOLERANCE x baseline.
+ * Baseline: e2e/canvas-perf.baseline.json. Regenerate deliberately with
+ *   PERF_BASELINE=update npm run perf
+ * Each gated timing must stay within TOLERANCE x baseline + SLACK.
  */
 
 const BASELINE_PATH = join(__dirname, "canvas-perf.baseline.json");
 const LATEST_PATH = join(__dirname, "../test-results/canvas-perf.latest.json");
 const TOLERANCE = 1.5;
+// absolute slack added on top of TOLERANCE so sub-millisecond / tiny baselines
+// don't fail on scheduling noise
+const SLACK = { fullRedrawMs: 3, paintPerCellUs: 30 } as const;
 const UPDATE = process.env.PERF_BASELINE === "update";
 
 const CONFIGS = [
@@ -205,11 +209,11 @@ test("canvas render performance", async ({ page }) => {
   for (const name of Object.keys(results)) {
     for (const metric of ["fullRedrawMs", "paintPerCellUs"] as const) {
       const now = results[name][metric];
-      const ceil = base[name][metric] * TOLERANCE;
+      const ceil = base[name][metric] * TOLERANCE + SLACK[metric];
       expect
         .soft(
           now,
-          `${name}.${metric}: ${now} vs baseline ${base[name][metric]} (x${TOLERANCE} = ${ceil.toFixed(1)})`,
+          `${name}.${metric}: ${now} vs baseline ${base[name][metric]} (ceil ${ceil.toFixed(1)})`,
         )
         .toBeLessThanOrEqual(ceil);
     }
