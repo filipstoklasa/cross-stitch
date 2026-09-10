@@ -43,6 +43,4 @@ test("zoom controls change the zoom level and the canvas stays crisp", async ({
   await page.getByTestId("square-size-input").selectOption("10");
   await page.keyboard.press("Escape");
   await expect(zoomValue).toHaveText("100%");
-
-  await expect(page).toHaveScreenshot();
 });

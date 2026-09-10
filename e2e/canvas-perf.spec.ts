@@ -131,6 +131,9 @@ type Metrics = Record<
 >;
 
 test("canvas render performance", async ({ page }) => {
+  // Absolute-ms timings vary with the host, so this is a manual eval
+  // (`npm run perf`), not a shared-CI gate — `npx playwright test` in CI skips it.
+  test.skip(!!process.env.CI, "run via `npm run perf`");
   test.setTimeout(120_000);
   await page.addInitScript(INSTRUMENT);
 

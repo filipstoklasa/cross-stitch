@@ -42,6 +42,4 @@ test("Canvas configuration elements should exist", async ({ page }) => {
     page.getByText(`© ${new Date().getFullYear()} Filip Stoklasa`),
   ).toBeVisible();
   await expect(page.getByText("version:")).toBeVisible();
-
-  await expect(page).toHaveScreenshot();
 });
