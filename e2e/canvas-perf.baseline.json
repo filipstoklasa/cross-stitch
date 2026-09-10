@@ -1,0 +1,34 @@
+{
+  "env": {
+    "dpr": 1,
+    "viewport": {
+      "w": 1280,
+      "h": 720
+    },
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.28 Safari/537.36"
+  },
+  "results": {
+    "default_500_sq20": {
+      "cells": 625,
+      "fullRedrawMs": 11.1,
+      "fullRedrawOps": 1877,
+      "paintAllCellsMs": 64.3,
+      "paintPerCellUs": 102.9
+    },
+    "medium_1000_sq20": {
+      "cells": 2500,
+      "fullRedrawMs": 36.9,
+      "fullRedrawOps": 7502,
+      "paintAllCellsMs": 225.8,
+      "paintPerCellUs": 90.3
+    },
+    "large_1500_sq10": {
+      "cells": 22500,
+      "fullRedrawMs": 361,
+      "fullRedrawOps": 67502,
+      "paintAllCellsMs": 1776.7,
+      "paintPerCellUs": 79
+    }
+  },
+  "at": "2026-09-10T18:01:07.741Z"
+}
