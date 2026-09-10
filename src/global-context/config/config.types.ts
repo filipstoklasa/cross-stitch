@@ -17,7 +17,6 @@ export interface DefaultConfig extends Dimensions {
   initialState?: CanvasState;
   pattern?: string;
   autoSafeMode?: boolean;
-  markers?: Marker[];
 }
 
 export interface ConfigContextState {

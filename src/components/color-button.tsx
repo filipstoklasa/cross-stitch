@@ -1,35 +1,35 @@
-import { Box, Button } from "@chakra-ui/react";
-import { type ChangeEvent, type PropsWithChildren, useRef } from "react";
-import { withLabel } from "./utils/with-label";
+import { type ChangeEvent, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface ColorButtonProps {
   color: string;
   onChange: (color: string) => void;
+  className?: string;
 }
 
-export const ColorButton = withLabel(
-  ({ color, onChange }: PropsWithChildren<ColorButtonProps>) => {
-    const inputRef = useRef<HTMLInputElement>(null);
+// Swatch that opens the native color picker.
+export const ColorButton = ({ color, onChange, className }: ColorButtonProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    const onInputClick = () => {
-      inputRef.current?.click();
-    };
-
-    const onInputChange = ({
-      target: { value },
-    }: ChangeEvent<HTMLInputElement>) => onChange(value);
-
-    return (
-      <Box position="relative">
-        <Button onClick={onInputClick} backgroundColor={color}>
-          <input
-            ref={inputRef}
-            value={color}
-            type="color"
-            onChange={onInputChange}
-          />
-        </Button>
-      </Box>
-    );
-  }
-);
+  return (
+    <button
+      type="button"
+      aria-label="Marker color"
+      onClick={() => inputRef.current?.click()}
+      className={cn(
+        "relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-input shadow-sm transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        className,
+      )}
+      style={{ backgroundColor: color }}
+    >
+      <input
+        ref={inputRef}
+        value={color}
+        type="color"
+        onChange={({ target: { value } }: ChangeEvent<HTMLInputElement>) =>
+          onChange(value)
+        }
+      />
+    </button>
+  );
+};

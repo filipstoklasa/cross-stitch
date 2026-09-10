@@ -1,46 +1,46 @@
 import { expect, test } from "@playwright/test";
 
-test("Scales the canvas and axis accordingly", async ({ page }) => {
+test("zoom controls change the zoom level and the canvas stays crisp", async ({
+  page,
+}) => {
   await page.goto("http://localhost:3000/");
 
-  await expect(page.getByTestId("scene")).toHaveAttribute("width", "500");
-  await expect(page.getByTestId("scene")).toHaveAttribute("height", "500");
+  const zoomValue = page.getByTestId("scale-value");
+  await expect(zoomValue).toHaveText("100%");
+
+  await page.getByTestId("scale-up").click();
+  await expect(zoomValue).toHaveText("125%");
+
+  await page.getByTestId("scale-up").click();
+  await page.getByTestId("scale-down").click();
+  await expect(zoomValue).toHaveText("125%");
 
   await page.getByTestId("scale-down").click();
+  await expect(zoomValue).toHaveText("100%");
 
-  await expect(page.getByTestId("scene")).toHaveAttribute("width", "250");
-  await expect(page.getByTestId("scene")).toHaveAttribute("height", "250");
+  // wheel zooms in on the pointer
+  const scene = page.getByTestId("scene");
+  await scene.hover({ position: { x: 200, y: 200 } });
+  await page.mouse.wheel(0, -600);
+  await expect(async () => {
+    const pct = Number((await zoomValue.textContent())!.replace("%", ""));
+    expect(pct).toBeGreaterThan(100);
+  }).toPass();
 
-  await page.getByTestId("scale-down").click();
+  // the backing store is sized to the viewport * devicePixelRatio, not the grid
+  const ok = await page.evaluate(() => {
+    const c = document.getElementById("scene") as HTMLCanvasElement;
+    const dpr = window.devicePixelRatio || 1;
+    return (
+      Math.abs(c.width - c.getBoundingClientRect().width * dpr) <= dpr &&
+      c.width > 0
+    );
+  });
+  expect(ok).toBe(true);
 
-  await expect(page.getByTestId("scene")).toHaveAttribute("width", "250");
-  await expect(page.getByTestId("scene")).toHaveAttribute("height", "250");
-
-  await page.getByTestId("scale-up").click();
-  await page.getByTestId("scale-up").click();
-  await page.getByTestId("scale-up").click();
-
-  await expect(page.getByTestId("scene")).toHaveAttribute("width", "1000");
-  await expect(page.getByTestId("scene")).toHaveAttribute("height", "1000");
-
+  // changing dimensions resets the zoom
   await page.getByTestId("menu-button").click();
-
   await page.getByTestId("square-size-input").selectOption("10");
-  await page.getByTestId("scene-width-input").selectOption("150");
-  await page.getByTestId("scene-height-input").selectOption("150");
-
-  await page.mouse.click(20, 100);
-
-  await expect(page.getByTestId("scene")).toHaveAttribute("width", "1500");
-  await expect(page.getByTestId("scene")).toHaveAttribute("height", "1500");
-
-  await page.getByTestId("scale-up").click();
-  await page.getByTestId("scale-up").click();
-  await page.getByTestId("scale-up").click();
-  await page.getByTestId("scale-up").click();
-
-  await expect(page.getByTestId("scene")).toHaveAttribute("width", "4500");
-  await expect(page.getByTestId("scene")).toHaveAttribute("height", "4500");
-
-  await expect(page).toHaveScreenshot();
+  await page.keyboard.press("Escape");
+  await expect(zoomValue).toHaveText("100%");
 });

@@ -1,20 +1,19 @@
 import { AutoSaveControls } from "./components/auto-save";
 import { ColorsControls } from "./components/colors";
 import { DimensionsControls } from "./components/dimensions";
-import { Divider } from "@chakra-ui/react";
 import { LoadStatusControls } from "./components/load-status";
 import { SaveStatusControls } from "./components/save-status";
-import { Stack } from "@chakra-ui/react";
+import { Separator } from "@/components/ui/separator";
 
 export const Controls = () => (
-  <Stack spacing={3}>
+  <div className="flex flex-col gap-4">
     <DimensionsControls />
-    <Divider />
+    <Separator />
     <ColorsControls />
     <LoadStatusControls />
-    <Divider />
+    <Separator />
     <SaveStatusControls />
-    <Divider />
+    <Separator />
     <AutoSaveControls />
-  </Stack>
+  </div>
 );

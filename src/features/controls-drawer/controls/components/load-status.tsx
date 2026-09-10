@@ -1,19 +1,19 @@
-import { Button, Flex, Text, useToast } from "@chakra-ui/react";
 import {
   type Config,
   useSaveLocalConfig,
   validateConfig,
 } from "@/hooks/use-save-config";
 import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { CANVAS_STATE } from "@/features/canvas/canvas.constants";
 import { FileButton } from "@/components/file-button";
 import { getBase64 } from "../utils/get-base64";
 import { getText } from "@/features/controls-drawer/controls/utils/get-text";
+import { toast } from "sonner";
 import { useConfig } from "@/global-context/config/config";
 import { useDrawer } from "@/components/drawer/drawer.context";
 
 export const LoadStatusControls = () => {
-  const toast = useToast();
   const { onClose } = useDrawer();
   const { setConfig } = useConfig();
   const { getLocalConfig, setLocalConfig } = useSaveLocalConfig();
@@ -37,23 +37,19 @@ export const LoadStatusControls = () => {
         }
 
         setConfig(config);
-
         onClose();
       } catch {
-        toast({
-          description: "Failed loading configuration from browser storage.",
-          status: "error",
-        });
+        toast.error("Failed loading configuration from browser storage.");
         setLocalConfig(undefined);
       }
     },
-    [toast, setConfig, setLocalConfig, onClose]
+    [setConfig, setLocalConfig, onClose],
   );
 
   const loadFileConfig = (file: File) => {
     getText(file, (value) => {
       const { marker, initialState, width, height, squareSize } = JSON.parse(
-        value as string
+        value as string,
       ) as Config;
       loadConfig({ marker, initialState, width, height, squareSize });
     });
@@ -61,9 +57,7 @@ export const LoadStatusControls = () => {
 
   const onInputChange = (file: File) => {
     getBase64(file, (source) => {
-      if (source) {
-        setConfig({ pattern: source.toString() });
-      }
+      if (source) setConfig({ pattern: source.toString() });
     });
     onClose();
   };
@@ -73,20 +67,18 @@ export const LoadStatusControls = () => {
   }, [getLocalConfig]);
 
   return (
-    <>
-      <Text fontWeight="bold">Input</Text>
-      <Flex gap={2}>
+    <div className="flex flex-col gap-2">
+      <p className="text-sm font-semibold">Input</p>
+      <div className="flex flex-wrap gap-2">
         <Button
-          isDisabled={!isConfigAvailable}
+          variant="outline"
+          size="sm"
+          disabled={!isConfigAvailable}
           onClick={() => loadConfig(getLocalConfig())}
         >
           Browser config
         </Button>
-        <FileButton
-          accept=".json"
-          testId="file-config"
-          onChange={loadFileConfig}
-        >
+        <FileButton accept=".json" testId="file-config" onChange={loadFileConfig}>
           File config
         </FileButton>
         <FileButton
@@ -96,7 +88,7 @@ export const LoadStatusControls = () => {
         >
           Background pattern
         </FileButton>
-      </Flex>
-    </>
+      </div>
+    </div>
   );
 };

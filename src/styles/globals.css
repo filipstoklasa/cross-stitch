@@ -2,6 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: #fbfbf9;
+    --foreground: #1b1f24;
+    --card: #ffffff;
+    --card-foreground: #1b1f24;
+    --popover: #ffffff;
+    --popover-foreground: #1b1f24;
+    --primary: #c64843;
+    --primary-foreground: #fbfbf9;
+    --secondary: #f0eee9;
+    --secondary-foreground: #1b1f24;
+    --muted: #f0eee9;
+    --muted-foreground: #6b7280;
+    --accent: #f0eee9;
+    --accent-foreground: #1b1f24;
+    --destructive: #c64843;
+    --destructive-foreground: #fbfbf9;
+    --border: #e4e2db;
+    --input: #e4e2db;
+    --ring: #c64843;
+    --radius: 0.5rem;
+
+    /* canvas + rulers (read by the renderer via getComputedStyle) */
+    --canvas-bg: #ffffff;
+    --grid-line: #d8d6ce;
+    --grid-line-major: #9c9a90;
+    --ruler-text: #6b7280;
+  }
+
+  :root[data-theme="dark"],
+  .dark {
+    --background: #15181e;
+    --foreground: #e8e8e4;
+    --card: #1b1f26;
+    --card-foreground: #e8e8e4;
+    --popover: #1b1f26;
+    --popover-foreground: #e8e8e4;
+    --primary: #d9534e;
+    --primary-foreground: #15181e;
+    --secondary: #232830;
+    --secondary-foreground: #e8e8e4;
+    --muted: #232830;
+    --muted-foreground: #9aa0aa;
+    --accent: #232830;
+    --accent-foreground: #e8e8e4;
+    --destructive: #d9534e;
+    --destructive-foreground: #15181e;
+    --border: #2a2f38;
+    --input: #2a2f38;
+    --ring: #d9534e;
+
+    --canvas-bg: #12151a;
+    --grid-line: #2e3440;
+    --grid-line-major: #565e6c;
+    --ruler-text: #9aa0aa;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family:
+      "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+      sans-serif;
+    font-feature-settings: "cv05", "ss01";
+  }
+
+  /* numeric UI (rulers, zoom %, dimensions) */
+  .tnum {
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ColorButton proxies clicks to this hidden native picker */
 input[type="color"] {
-	visibility: hidden;
+  visibility: hidden;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
